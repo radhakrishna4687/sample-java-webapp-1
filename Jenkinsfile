@@ -1,26 +1,27 @@
 pipeline {
     agent any 
     environment {
-        //DOCKER_TAG = getDockerTag()
-        Docker_image = docker-test-server-1
-        Container_name = server-test-1
-        Docker_repo= radhakrishna4687
-        Github_branch = sample-java-webapp-1
+        DOCKER_TAG = getDockerTag()
+        DOCKER_IMAGE = "docker-test-server-1"
+        CONTAINER_NAME = "server-test-1"
+        GITHUB_BRANCH = "java-servlet-login-and-display"
+       // DOCKER_REPO = "radhakrishna4687"
+        registryCredential = ‘dockerhub’
     }
     stages {
         stage ('Clone Repository') {
             steps {
                 echo "Checkout Git Repo"
-                git credentialsId: 'github', url: 'https://github.com/radhakrishna4687/java-servlet-login-and-display'
+                git credentialsId: 'github', url: 'https://github.com/radhakrishna4687/:${GITHUB_BRANCH}'
                // gitbranch: "master", url 'https://github.com/radhakrishna4687/${Github_branch}.git'
                 echo "Complted the Checkout the Git"
             }
 
         }
-        stage ('Build the Dockerfie to create  Docker Image') {
+        stage ('Build Docker Image') {
             steps {
                 sh '''
-                    docker build -t ${Docker_image} -f Dockerfile .
+                    docker build . -t ${DOCKER_IMAGE} -f "Dockerfile "
                     docker images
                 ''' 
                 //sh "docker build .  -t radhakrishna4687/test-image-1:${DOCKER_TAG} "
@@ -29,7 +30,7 @@ pipeline {
         stage ('Run the Docker Container') {
             steps {
                 sh '''
-                    docker run -itd --name=${Container_name} -p 8091:8080 ${Docker_image}
+                    docker run -itd --name=${CONTAINER_NAME} -p 8091:8080 ${DOCKER_IMAGE}
                     docker ps 
                     docker inspect ${Container_name}
                 '''    
@@ -37,13 +38,19 @@ pipeline {
         }
         stage ('Docker image push to Dockerhub Repository') {
             steps {
-                sh 'docker tag ${Container_name} ${Docker_repo}/${Docker_image}:0.0.1'
+                sh 'docker tag ${CONTAINER_NAME} radhakrishna4687/${DOCKER_IMAGE}:${DOCKER_TAG}'
             }
         }
-        stage ('DockerHub Push') {
-            steps{ 
-                withCre
+        stage ('Push docker image to DockerHub') {
+            withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhubpwd')]) {
+                sh "docker login -u radhakrishna4687 -p ${dockerhubpwd}"
+                sh "docker push radhakrishna4687/${DOCKER_IMAGE}:${DOCKER_TAG}"
             }
         }
     }
+}
+//Dynamically allocate the version name with latest commit id
+def getDockerTag() {
+    def tag = sh script: 'git rev-parse HEAD', returnStdout: true
+    return tag
 }
