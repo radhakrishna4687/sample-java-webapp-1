@@ -42,9 +42,11 @@ pipeline {
             }
         }
         stage ('Push docker image to DockerHub') {
-            withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhubpwd')]) {
-                sh "docker login -u radhakrishna4687 -p ${dockerhubpwd}"
-                sh "docker push radhakrishna4687/${DOCKER_IMAGE}:${DOCKER_TAG}"
+            steps {
+                withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhubpwd')]) {
+                    sh "docker login -u radhakrishna4687 -p ${dockerhubpwd}"
+                    sh "docker push radhakrishna4687/${DOCKER_IMAGE}:${DOCKER_TAG}"
+                }
             }
         }
     }
