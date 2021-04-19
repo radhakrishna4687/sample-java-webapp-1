@@ -5,7 +5,7 @@ pipeline {
         Docker_image = docker-test-server-1
         Container_name = server-test-1
         Docker_repo= radhakrishna4687
-        Github_branch = java-servlet-login-and-display
+        Github_branch = sample-java-webapp-1
     }
     stages {
         stage ('Clone Repository') {
