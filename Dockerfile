@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:groovy-20210416
 
 ENV GITHUB_BRANCH=sample-java-webapp-1
 ENV TOMCAT_VERSION=8.5.50
