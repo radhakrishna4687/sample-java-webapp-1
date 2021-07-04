@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:20.10
 
 ENV GITHUB_BRANCH=sample-java-webapp-1
 ENV TOMCAT_VERSION=8.5.50
