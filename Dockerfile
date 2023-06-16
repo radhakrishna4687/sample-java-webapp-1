@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:kinetic
 
 ENV GITHUB_BRANCH=sample-java-webapp-1
 ENV TOMCAT_VERSION=8.5.50
